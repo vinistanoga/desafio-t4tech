@@ -27,8 +27,8 @@ class ImportPlayersJob implements ShouldQueue
      */
     public int $timeout = 600;
 
-    protected int $perPage;
-    protected ?int $limit;
+    public int $perPage;
+    public ?int $limit;
 
     public function __construct(int $perPage = 100, ?int $limit = null)
     {

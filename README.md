@@ -208,7 +208,7 @@ Rodar testes específicos:
 ./vendor/bin/sail artisan test --filter=TeamTest
 ```
 
-A aplicação possui **69 testes** cobrindo:
+A aplicação possui **73 testes** cobrindo:
 - Autenticação (Sanctum + X-Authorization)
 - CRUD de Times e Jogadores
 - Permissões (admin vs usuário regular)

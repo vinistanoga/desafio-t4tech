@@ -12,7 +12,7 @@ API RESTful desenvolvida em Laravel para gerenciamento de informações da NBA (
 
 ## 🚀 Instalação e Configuração
 
-### Opção 1: Usando Docker (Recomendado)
+### Opção 1: Usando Docker 🐳 (Recomendado)
 
 1. Clone o repositório:
 ```bash
@@ -224,7 +224,7 @@ A aplicação possui **69 testes** cobrindo:
 - Pode criar, ler e atualizar registros
 - **Não pode deletar** registros
 
-##  Docker
+## 🐳 Docker
 
 O projeto usa Laravel Sail, que já vem configurado com:
 - PHP 8.4

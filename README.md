@@ -1,61 +1,253 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Desafio T4Tech - API de Gerenciamento de Esportes
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API RESTful desenvolvida em Laravel para gerenciamento de informações da NBA (times e jogadores), com integração à API pública BallDontLie.
 
-## About Laravel
+## 📋 Requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.4
+- Composer
+- MySQL 8.0 
+- Redis (opcional, para filas assíncronas)
+- Docker & Docker Compose (opcional)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Instalação e Configuração
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Opção 1: Usando Docker (Recomendado)
 
-## Learning Laravel
+1. Clone o repositório:
+```bash
+git clone https://github.com/vinistanoga/desafio-t4tech.git
+cd desafio-t4tech
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. Copie o arquivo de ambiente:
+```bash
+cp .env.example .env
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+3. Configure a API Key do BallDontLie no `.env`:
+```env
+BALLDONTLIE_API_KEY=eab...
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. Instale as dependências do Composer (via Docker):
+```bash
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php84-composer:latest \
+    composer install --ignore-platform-reqs
+```
 
-## Laravel Sponsors
+5. Suba os containers com Laravel Sail:
+```bash
+./vendor/bin/sail up -d
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+6. Gere a chave da aplicação:
+```bash
+./vendor/bin/sail artisan key:generate
+```
 
-### Premium Partners
+7. Rode as migrations:
+```bash
+./vendor/bin/sail artisan migrate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+8. (Opcional) Popule o banco com usuários de teste:
+```bash
+./vendor/bin/sail artisan db:seed
+```
 
-## Contributing
+Pronto! A API estará rodando em `http://localhost`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Opção 2: Instalação Local
 
-## Code of Conduct
+1. Clone o repositório e entre na pasta
+2. Copie o `.env.example` para `.env` e configure o banco de dados
+3. Instale as dependências: `composer install`
+4. Gere a chave: `php artisan key:generate`
+5. Rode as migrations: `php artisan migrate`
+6. Rode os seeders: `php artisan db:seed`
+7. Inicie o servidor: `php artisan serve`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🔐 Autenticação
 
-## Security Vulnerabilities
+A API usa dois tipos de autenticação:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. **Laravel Sanctum** - Token Bearer para autenticação principal
+2. **X-Authorization** - Token adicional para acesso externo
 
-## License
+### Usuários de Teste
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Após rodar o seeder, você terá:
+
+```
+Admin:
+- Email: admin@test.com
+- Senha: password
+
+Usuário Regular:
+- Email: user@test.com
+- Senha: password
+```
+
+### Como Autenticar
+
+1. Faça login para obter o token Sanctum:
+```bash
+POST /api/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "password"
+}
+```
+
+2. Gere o token X-Authorization:
+```bash
+POST /api/x-auth/generate
+Authorization: Bearer {seu_token_sanctum}
+Content-Type: application/json
+```
+
+3. Use ambos os tokens nas requisições:
+```bash
+GET /api/teams
+Authorization: Bearer {token_sanctum}
+X-Authorization: {x_authorization_token}
+Accept: application/json
+```
+
+## 📚 Endpoints da API
+
+### Autenticação
+- `POST /api/login` - Login
+- `POST /api/logout` - Logout
+- `GET /api/me` - Dados do usuário autenticado
+- `POST /api/x-auth/generate` - Gerar token X-Authorization
+- `GET /api/x-auth/token` - Ver token X-Authorization atual
+- `DELETE /api/x-auth/revoke` - Revogar token X-Authorization
+
+### Times (Teams)
+- `GET /api/teams` - Listar times (com paginação e filtros)
+- `GET /api/teams/{id}` - Detalhes de um time
+- `POST /api/teams` - Criar time
+- `PUT /api/teams/{id}` - Atualizar time
+- `DELETE /api/teams/{id}` - Deletar time (apenas admin)
+
+**Filtros disponíveis:**
+- `conference` - Filtrar por conferência (East/West)
+- `division` - Filtrar por divisão
+
+### Jogadores (Players)
+- `GET /api/players` - Listar jogadores (com paginação e filtros)
+- `GET /api/players/{id}` - Detalhes de um jogador
+- `POST /api/players` - Criar jogador
+- `PUT /api/players/{id}` - Atualizar jogador
+- `DELETE /api/players/{id}` - Deletar jogador (apenas admin)
+
+**Filtros disponíveis:**
+- `search` - Busca por nome 
+- `team_ids[]` - Filtrar por IDs externos de times
+- `player_ids[]` - Filtrar por IDs externos de jogadores
+
+## 🔄 Importação de Dados
+
+A aplicação importa dados da API BallDontLie usando **Jobs assíncronos**. Os comandos abaixo disparam os jobs na fila:
+
+```bash
+# Importar todos os times
+./vendor/bin/sail artisan import:teams
+
+# Importar jogadores com limite (recomendado)
+./vendor/bin/sail artisan import:players --per-page=100 --limit=500
+
+# Importar todos os jogadores 
+./vendor/bin/sail artisan import:players
+```
+
+**Importante:** Os comandos apenas **disparam os jobs**. Para processar as importações, você precisa rodar o worker da fila:
+
+```bash
+# Processar jobs da fila
+./vendor/bin/sail artisan queue:work
+```
+
+**Observações:**
+- A API gratuita do BallDontLie permite 5 requisições por minuto
+- O sistema já implementa rate limiting (12 segundos entre requests)
+- **Sem `--limit`**: Importa TODOS os jogadores (milhares) - pode demorar muito tempo
+- **Com `--limit=500`**: Importa apenas 500 jogadores (recomendado para testes)
+- Os logs de importação ficam em `storage/logs/laravel.log`
+- Os jobs têm 3 tentativas automáticas em caso de falha
+- Teams: timeout de 5 minutos | Players: timeout de 10 minutos
+
+## 🧪 Testes
+
+Rodar todos os testes:
+```bash
+./vendor/bin/sail artisan test
+```
+
+Rodar testes específicos:
+```bash
+# Testes de feature
+./vendor/bin/sail artisan test --testsuite=Feature
+
+# Testes unitários
+./vendor/bin/sail artisan test --testsuite=Unit
+
+# Teste específico
+./vendor/bin/sail artisan test --filter=TeamTest
+```
+
+A aplicação possui **69 testes** cobrindo:
+- Autenticação (Sanctum + X-Authorization)
+- CRUD de Times e Jogadores
+- Permissões (admin vs usuário regular)
+- Serviços
+- Jobs
+
+## 🔒 Permissões
+
+### Admin
+- Pode criar, ler, atualizar e **deletar** registros
+
+### Usuário Regular
+- Pode criar, ler e atualizar registros
+- **Não pode deletar** registros
+
+##  Docker
+
+O projeto usa Laravel Sail, que já vem configurado com:
+- PHP 8.4
+- MySQL 8.0
+- Redis
+
+Comandos úteis:
+```bash
+# Subir containers
+./vendor/bin/sail up -d
+
+# Parar containers
+./vendor/bin/sail down
+
+# Ver logs
+./vendor/bin/sail logs -f
+
+# Acessar container
+./vendor/bin/sail shell
+
+# Rodar artisan
+./vendor/bin/sail artisan {comando}
+```
+
+## 📝 Notas
+
+- A aplicação está configurada para usar **Redis** como driver de filas
+- Para ambiente de desenvolvimento, você pode usar `sync` no `.env` (não requer Redis)
+- Todas as rotas da API retornam JSON no formato padronizado
+- **Importante**: Todas as requisições devem incluir os headers `Content-Type: application/json` (para POST/PUT) e `Accept: application/json`

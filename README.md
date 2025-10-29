@@ -27,7 +27,7 @@ cp .env.example .env
 
 3. Configure a API Key do BallDontLie no `.env`:
 ```env
-BALLDONTLIE_API_KEY=eab...
+BALLDONTLIE_API_KEY="eabe28..."
 ```
 
 4. Instale as dependências do Composer (via Docker):
@@ -39,23 +39,27 @@ docker run --rm \
     laravelsail/php84-composer:latest \
     composer install --ignore-platform-reqs
 ```
+5. Faça o build dos containers: 
+```bash
+./vendor/bin/sail build
+```
 
-5. Suba os containers com Laravel Sail:
+6. Suba os containers com Laravel Sail:
 ```bash
 ./vendor/bin/sail up -d
 ```
 
-6. Gere a chave da aplicação:
+7. Gere a chave da aplicação:
 ```bash
 ./vendor/bin/sail artisan key:generate
 ```
 
-7. Rode as migrations:
+8. Rode as migrations:
 ```bash
 ./vendor/bin/sail artisan migrate
 ```
 
-8. (Opcional) Popule o banco com usuários de teste:
+9. (Opcional) Popule o banco com usuários de teste:
 ```bash
 ./vendor/bin/sail artisan db:seed
 ```

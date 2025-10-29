@@ -27,13 +27,7 @@ class UpdateTeamRequest extends FormRequest
                 'integer',
                 Rule::unique('teams', 'external_id')->ignore($teamId),
             ],
-            'abbreviation' => [
-                'sometimes',
-                'required',
-                'string',
-                'max:10',
-                Rule::unique('teams', 'abbreviation')->ignore($teamId),
-            ],
+            'abbreviation' => 'sometimes|required|string|max:10',
             'city' => 'nullable|string|max:100',
             'conference' => 'nullable|string|in:East,West',
             'division' => 'nullable|string|max:50',
@@ -45,7 +39,6 @@ class UpdateTeamRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'abbreviation.unique' => 'This team abbreviation already exists.',
             'conference.in' => 'Conference must be either East or West.',
         ];
     }

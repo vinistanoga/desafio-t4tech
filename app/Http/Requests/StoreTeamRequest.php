@@ -20,7 +20,7 @@ class StoreTeamRequest extends FormRequest
     {
         return [
             'external_id' => 'nullable|integer|unique:teams,external_id',
-            'abbreviation' => 'required|string|max:10|unique:teams,abbreviation',
+            'abbreviation' => 'required|string|max:10',
             'city' => 'nullable|string|max:100',
             'conference' => 'nullable|string|in:East,West',
             'division' => 'nullable|string|max:50',
@@ -33,7 +33,6 @@ class StoreTeamRequest extends FormRequest
     {
         return [
             'abbreviation.required' => 'The team abbreviation is required.',
-            'abbreviation.unique' => 'This team abbreviation already exists.',
             'conference.in' => 'Conference must be either East or West.',
             'full_name.required' => 'The full team name is required.',
             'name.required' => 'The team name is required.',

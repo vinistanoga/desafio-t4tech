@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'balldontlie' => [
+        'url' => env('BALLDONTLIE_API_URL', 'https://api.balldontlie.io/v1'),
+        'key' => env('BALLDONTLIE_API_KEY'),
+    ],
+
 ];

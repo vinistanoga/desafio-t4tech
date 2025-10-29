@@ -12,18 +12,13 @@
 */
 
 pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
 | Expectations
 |--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
 */
 
 expect()->extend('toBeOne', function () {
@@ -34,14 +29,62 @@ expect()->extend('toBeOne', function () {
 |--------------------------------------------------------------------------
 | Functions
 |--------------------------------------------------------------------------
-|
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
-|
 */
 
-function something()
+/**
+ * Create an authenticated admin user.
+ */
+function createAdmin(array $attributes = []): \App\Models\User
 {
-    // ..
+    return \App\Models\User::factory()->create(array_merge([
+        'role' => 'admin',
+    ], $attributes));
+}
+
+/**
+ * Create an authenticated regular user.
+ */
+function createUser(array $attributes = []): \App\Models\User
+{
+    return \App\Models\User::factory()->create(array_merge([
+        'role' => 'user',
+    ], $attributes));
+}
+
+/**
+ * Create a Sanctum token for a user.
+ */
+function actingAsAdmin(): \App\Models\User
+{
+    $admin = createAdmin();
+    $admin->generateApiToken();
+    return $admin;
+}
+
+/**
+ * Create a Sanctum token for a regular user.
+ */
+function actingAsUser(): \App\Models\User
+{
+    $user = createUser();
+    $user->generateApiToken();
+    return $user;
+}
+
+/**
+ * Generate authentication headers for API requests.
+ */
+function headers(?string $token = null, ?string $apiToken = null): array
+{
+    $headers = [];
+
+    if ($token) {
+        $headers['Authorization'] = 'Bearer ' . $token;
+    }
+
+    if ($apiToken) {
+        $headers['X-Authorization'] = $apiToken;
+    }
+
+    return $headers;
 }

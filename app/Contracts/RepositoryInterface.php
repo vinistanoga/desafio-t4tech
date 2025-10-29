@@ -42,14 +42,4 @@ interface RepositoryInterface
      * Delete a record.
      */
     public function delete(int $id): bool;
-
-    /**
-     * Find by specific column.
-     */
-    public function findBy(string $column, mixed $value): ?Model;
-
-    /**
-     * Check if record exists.
-     */
-    public function exists(int $id): bool;
 }

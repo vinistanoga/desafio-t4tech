@@ -75,24 +75,12 @@ abstract class BaseRepository implements RepositoryInterface
      */
     public function delete(int $id): bool
     {
-        $record = $this->findOrFail($id);
+        $record = $this->find($id);
+
+        if (!$record) {
+            return false;
+        }
 
         return $record->delete();
-    }
-
-    /**
-     * Find by specific column.
-     */
-    public function findBy(string $column, mixed $value): ?Model
-    {
-        return $this->model->where($column, $value)->first();
-    }
-
-    /**
-     * Check if record exists.
-     */
-    public function exists(int $id): bool
-    {
-        return $this->model->where('id', $id)->exists();
     }
 }

@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Contracts\TeamRepositoryInterface;
-use App\Services\BallDontLieService;
+use App\Jobs\ImportTeamsJob;
 use Illuminate\Console\Command;
 
 class ImportTeams extends Command
@@ -20,81 +19,23 @@ class ImportTeams extends Command
      *
      * @var string
      */
-    protected $description = 'Import NBA teams from BallDontLie API';
-
-    public function __construct(
-        protected BallDontLieService $ballDontLieService,
-        protected TeamRepositoryInterface $teamRepository
-    ) {
-        parent::__construct();
-    }
+    protected $description = 'Import NBA teams from BallDontLie API using background job';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $this->info('Starting teams import from BallDontLie API...');
+        $this->info('Dispatching teams import job...');
         $this->newLine();
 
-        try {
-            $apiTeams = $this->ballDontLieService->getTeams();
+        ImportTeamsJob::dispatch();
 
-            if (empty($apiTeams)) {
-                $this->error('No teams found from API.');
-                return self::FAILURE;
-            }
+        $this->line('✓ Teams import job dispatched to queue');
+        $this->newLine();
+        $this->comment('Run "php artisan queue:work" to process the job');
+        $this->comment('Check logs for import progress and results');
 
-            $this->info("Found " . count($apiTeams) . " teams. Importing...");
-
-            $progressBar = $this->output->createProgressBar(count($apiTeams));
-            $progressBar->start();
-
-            $imported = 0;
-            $updated = 0;
-            $errors = 0;
-
-            foreach ($apiTeams as $apiTeam) {
-                try {
-                    $teamData = $this->ballDontLieService->transformTeamData($apiTeam);
-
-                    $existingTeam = $this->teamRepository->findByExternalId($teamData['external_id']);
-
-                    if ($existingTeam) {
-                        $this->teamRepository->update($existingTeam->id, $teamData);
-                        $updated++;
-                    } else {
-                        $this->teamRepository->create($teamData);
-                        $imported++;
-                    }
-                } catch (\Exception $e) {
-                    $this->newLine();
-                    $this->error("Error importing team {$apiTeam['full_name']}: {$e->getMessage()}");
-                    $progressBar->display();
-                    $errors++;
-                }
-
-                $progressBar->advance();
-            }
-
-            $progressBar->finish();
-            $this->newLine(2);
-
-            $this->info("✅ Teams import completed!");
-            $this->table(
-                ['Status', 'Count'],
-                [
-                    ['Imported', $imported],
-                    ['Updated', $updated],
-                    ['Errors', $errors],
-                    ['Total', count($apiTeams)],
-                ]
-            );
-
-            return self::SUCCESS;
-        } catch (\Exception $e) {
-            $this->error("Failed to import teams: {$e->getMessage()}");
-            return self::FAILURE;
-        }
+        return self::SUCCESS;
     }
 }

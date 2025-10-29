@@ -27,8 +27,6 @@ class PlayerController extends Controller
     {
         $filters = $request->only([
             'search',
-            'first_name',
-            'last_name',
             'team_ids',
             'player_ids'
         ]);

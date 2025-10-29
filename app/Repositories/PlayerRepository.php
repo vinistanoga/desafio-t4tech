@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\PlayerRepositoryInterface;
 use App\Models\Player;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PlayerRepository extends BaseRepository implements PlayerRepositoryInterface
@@ -14,9 +15,25 @@ class PlayerRepository extends BaseRepository implements PlayerRepositoryInterfa
     }
 
     /**
+     * Find player by ID with relationships.
+     */
+    public function find(int $id): ?Model
+    {
+        return $this->model->with('team')->find($id);
+    }
+
+    /**
+     * Get paginated records with team relationship.
+     */
+    public function paginate(int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->model->with('team')->paginate($perPage);
+    }
+
+    /**
      * Find player by external ID (BallDontLie ID).
      */
-    public function findByExternalId(int $externalId): ?object
+    public function findByExternalId(int $externalId): ?Model
     {
         return $this->model->where('external_id', $externalId)->first();
     }
@@ -29,7 +46,7 @@ class PlayerRepository extends BaseRepository implements PlayerRepositoryInterfa
      */
     public function getWithFilters(array $filters, int $perPage = 15): LengthAwarePaginator
     {
-        $query = $this->model->newQuery();
+        $query = $this->model->with('team');
 
         if (isset($filters['search'])) {
             $search = $filters['search'];

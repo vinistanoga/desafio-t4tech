@@ -24,8 +24,6 @@ class PlayerService
     /**
      * Filters available:
      * - search: Returns players whose first or last name matches this value
-     * - first_name: Exact first name match
-     * - last_name: Exact last name match
      * - team_ids: Array of team external IDs (?team_ids[]=1&team_ids[]=2)
      * - player_ids: Array of player external IDs (?player_ids[]=1&player_ids[]=2)
      */

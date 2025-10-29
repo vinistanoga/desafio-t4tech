@@ -40,7 +40,7 @@ class TeamService
      */
     public function findTeam(int $id): ?Model
     {
-        return $this->teamRepository->findOrFail($id);
+        return $this->teamRepository->find($id);
     }
 
     /**

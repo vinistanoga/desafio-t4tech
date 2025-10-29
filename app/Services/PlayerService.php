@@ -43,7 +43,7 @@ class PlayerService
      */
     public function findPlayer(int $id): ?Model
     {
-        return $this->playerRepository->findOrFail($id);
+        return $this->playerRepository->find($id);
     }
 
     /**

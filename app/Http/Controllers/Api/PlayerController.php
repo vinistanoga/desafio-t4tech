@@ -58,7 +58,7 @@ class PlayerController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $player = $this->playerService->getPlayerById($id);
+        $player = $this->playerService->findPlayer($id);
 
         if (!$player) {
             return $this->errorResponse('Player not found.', 404);
